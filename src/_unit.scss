@@ -48,7 +48,7 @@ $global-font-size: 100% !default;
   }
 
   @for $i from 1 through $count {
-    $rem-values: append($rem-values, -zf-to-rem(nth($values, $i), $base));
+    $rem-values: append($rem-values, -zf-to-rem(list.nth($values, $i), $base));
   }
 
   @return $rem-values;
