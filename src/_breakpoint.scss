@@ -1,7 +1,10 @@
 // Foundation for Sites by ZURB
 // foundation.zurb.com
 // Licensed under MIT Open Source
+@use 'sass:map';
+@use 'sass:list';
 
+@import '_mapToList';
 @import '_unit.scss';
 
 ////
@@ -28,8 +31,7 @@ $-zf-breakpoints-keys: map-to-list($breakpoints, 'keys');
 
 @if list.nth(map.values($breakpoints), 1) != 0 {
   @error 'The first key in the $breakpoints map must have a value of "0".';
-}
-@else {
+} @else {
   $-zf-zero-breakpoint: list.nth(map.keys($breakpoints), 1);
 }
 
@@ -55,8 +57,7 @@ $breakpoint-classes: (small medium large) !default;
   // Orientation media queries have a unique syntax
   @if $bp == 'landscape' or $bp == 'portrait' {
     @return '(orientation: #{$bp})';
-  }
-  @else if $bp == 'retina' {
+  } @else if $bp == 'retina' {
     @return '(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)';
   }
 
@@ -69,8 +70,7 @@ $breakpoint-classes: (small medium large) !default;
 
       $bp: map.get($breakpoints, $bp);
       $named: true;
-    }
-    @else {
+    } @else {
       $bp: 0;
       @warn 'breakpoint(): "#{$val}" is not defined in your $breakpoints setting.';
     }
@@ -82,7 +82,7 @@ $breakpoint-classes: (small medium large) !default;
   // Use a precision under 1px to support browser zoom, but not to low to avoid rounding.
   // See https://github.com/zurb/foundation-sites/issues/11313
   @if $bp-max {
-    $bp-max: -zf-bp-to-em($bp-max) - .00125;
+    $bp-max: -zf-bp-to-em($bp-max) - 0.00125;
   }
 
   // Conditions to skip media query creation
@@ -107,8 +107,7 @@ $breakpoint-classes: (small medium large) !default;
         @if $bp-max != null {
           $str: $str + '(max-width: #{$bp-max})';
         }
-      }
-      @else {
+      } @else {
         @warn 'breakpoint(): Only named media queries can have an `only` range.';
       }
     }
@@ -161,7 +160,10 @@ $breakpoint-classes: (small medium large) !default;
     @if global-variable-exists(-zf-size) {
       $old-zf-size: $-zf-size;
     }
-    $-zf-size: list.nth($value, 1) !global; // get the first value to account for `only` and `down` keywords
+    $-zf-size: list.nth(
+      $value,
+      1
+    ) !global; // get the first value to account for `only` and `down` keywords
 
     // If $str is still an empty string, no media query is needed
     @if $str == '' {
@@ -175,8 +177,7 @@ $breakpoint-classes: (small medium large) !default;
         @media print, screen and #{$str} {
           @content;
         }
-      }
-      @else {
+      } @else {
         @media screen and #{$str} {
           @content;
         }
@@ -211,7 +212,6 @@ $breakpoint-classes: (small medium large) !default;
 ///
 /// @returns {Mixed} The value for the key after `$key`, if `$key` was found. If `$key` was not found, or `$key` was the last value in the map, returns `null`.
 @function -zf-map-next($map, $key) {
-
   // Store the keys of the map as a list
   $values: map.keys($map);
 
@@ -230,7 +230,6 @@ $breakpoint-classes: (small medium large) !default;
   @else {
     @return map.get($map, list.nth($values, $i));
   }
-
 }
 
 /// Return a list of our named breakpoints less than $key. Useful for dealing with
@@ -296,7 +295,6 @@ $breakpoint-classes: (small medium large) !default;
     @return $map;
   }
 
-
   // Check if the breakpoint name exists globally
   @if not map.has-key($breakpoints, $value) {
     @if type-of($value) == 'number' {
@@ -328,30 +326,6 @@ $breakpoint-classes: (small medium large) !default;
 
     @return map.get($map, $anchor);
   }
-}
-
-@function map-to-list($value, $keep: 'both') {
-  $keep: if(index('keys' 'values', $keep), $keep, 'both');
-
-  @if type-of($value) == 'map' {
-    $keys: ();
-    $values: ();
-
-    @each $key, $val in $value {
-      $keys: append($keys, $key);
-      $values: append($values, $val);
-    }
-
-    @if $keep == 'keys' {
-      @return $keys;
-    } @else if $keep == 'values' {
-      @return $values;
-    } @else {
-      @return zip($keys, $values);
-    }
-  }
-
-  @return if(type-of($value) != 'list', ($value,), $value);
 }
 
 $small-up: '';
